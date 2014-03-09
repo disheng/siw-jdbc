@@ -25,7 +25,6 @@ public class StudentRepository {
 		Connection connection = this.dataSource.getConnection();
 		PreparedStatement statement = null;
 		try {
-			connection.setAutoCommit(false);
 			if (findByPrimaryKey(student.getCode()) != null) {
 				System.err.println("the student already exists");
 				return;
@@ -49,15 +48,9 @@ public class StudentRepository {
 				// lo studente o niente?
 				this.examsRepository.persist(exam, student);
 			}
-			connection.commit();
 			// TODO
 			// Che succede se eccezione prima?
 		} catch (Exception e) {
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
 		} finally {
 			statement.close();

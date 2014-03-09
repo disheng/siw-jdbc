@@ -2,6 +2,7 @@ package it.uniroma3.dia.db1.jdbc;
 
 import it.uniroma3.dia.db1.jdbc.factory.StudentFactory;
 import it.uniroma3.dia.db1.jdbc.model.Student;
+import it.uniroma3.dia.db1.jdbc.persistence.DatabaseUtils;
 import it.uniroma3.dia.db1.jdbc.persistence.StudentRepository;
 
 import java.util.List;
@@ -9,8 +10,9 @@ import java.util.List;
 public class UniversityShell {
 	
 	public static void main(String[] args) throws Exception {
+		DatabaseUtils.createTables();
 		deleteAllStudents(); 
-		generateAndPrint(1);
+		generateAndPrint(1100);
 	}
 	
 	public static void deleteAllStudents() throws Exception {
