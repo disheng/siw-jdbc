@@ -1,5 +1,8 @@
 package it.uniroma3.dia.db1.jdbc.persistence;
 
+import it.uniroma3.dia.db1.jdbc.model.Exam;
+import it.uniroma3.dia.db1.jdbc.model.Student;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,20 +10,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import it.uniroma3.dia.db1.jdbc.model.Exam;
-import it.uniroma3.dia.db1.jdbc.model.Student;
-
-/*
- CREATE TABLE students
- (
- code integer NOT NULL,
- firstname character varying(64) NOT NULL,
- lastname character varying(64) NOT NULL,
- birthdate date NOT NULL,
- CONSTRAINT pk_students PRIMARY KEY (code)
- )
- */
 
 public class StudentRepository {
 
@@ -32,18 +21,18 @@ public class StudentRepository {
 		this.examsRepository = new ExamRepository();
 	}
 
-	public void persist(Student student) throws SQLException  {
+	public void persist(Student student) throws SQLException {
 		Connection connection = this.dataSource.getConnection();
-		PreparedStatement statement  = null;
+		PreparedStatement statement = null;
 		try {
 			connection.setAutoCommit(false);
 			if (findByPrimaryKey(student.getCode()) != null) {
 				System.err.println("the student already exists");
 				return;
 			}
-			
+
 			String insert = "insert into students(code, firstname, lastname, birthDate) values (?,?,?,?)";
-			
+
 			statement = connection.prepareStatement(insert);
 			statement.setInt(1, student.getCode());
 			statement.setString(2, student.getFirstName());
@@ -53,17 +42,16 @@ public class StudentRepository {
 			t.getTime();
 			statement.setDate(4, new java.sql.Date(student.getBirthDate().getTime()));
 			statement.executeUpdate();
-			
-			System.exit(0);
 
 			for (Exam exam : student.getExams()) {
 				// TODO se ci sono degli errori qui? che succede?
-				// Come possiamo fare in modo che: o inserisco tutti gli esami e lo studente o niente?
+				// Come possiamo fare in modo che: o inserisco tutti gli esami e
+				// lo studente o niente?
 				this.examsRepository.persist(exam, student);
 			}
 			connection.commit();
-			// TODO 
-			// Che succede se eccezione prima? 
+			// TODO
+			// Che succede se eccezione prima?
 		} catch (Exception e) {
 			try {
 				connection.rollback();
@@ -71,7 +59,7 @@ public class StudentRepository {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-		} finally{
+		} finally {
 			statement.close();
 			connection.close();
 		}
@@ -90,7 +78,7 @@ public class StudentRepository {
 		PreparedStatement statement = connection.prepareStatement(insert);
 		statement.setInt(1, student.getCode());
 		statement.executeUpdate();
-		
+
 		// release resources
 		statement.close();
 		connection.close();
@@ -216,8 +204,8 @@ public class StudentRepository {
 
 		return students;
 	}
-	
-	public void printAll() throws Exception{
+
+	public void printAll() throws Exception {
 		// TODO come fare delle stampe per Nome corso -> Voto -> Studenti??
 		Connection connection = this.dataSource.getConnection();
 		String query = "select course, score, lastname from students join exams on student_code = code order by course, score"; //
@@ -225,25 +213,26 @@ public class StudentRepository {
 		ResultSet result = statement.executeQuery();
 		String prevCorso = "";
 		String prevScore = "";
-		
+
 		while (result.next()) {
-			if (!prevCorso.equals(result.getString("course"))){
+			if (!prevCorso.equals(result.getString("course"))) {
 				System.out.println(result.getString("course"));
 				prevCorso = result.getString("course");
 			}
-			if (!prevScore.equals(result.getString("score"))){
-				System.out.println("\t\t"+result.getString("score"));
+			if (!prevScore.equals(result.getString("score"))) {
+				System.out.println("\t\t" + result.getString("score"));
 				prevScore = result.getString("score");
 			}
-			System.out.println("\t\t\t"+result.getString("lastname"));
-			//System.out.println(result.getString("course") + " - " + result.getInt("score")+" - "+result.getString("lastname"));
+			System.out.println("\t\t\t" + result.getString("lastname"));
+			// System.out.println(result.getString("course") + " - " +
+			// result.getInt("score")+" - "+result.getString("lastname"));
 		}
 		// release resources
 		result.close();
 		statement.close();
 		connection.close();
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		StudentRepository rp = new StudentRepository();
 		rp.printAll();
