@@ -5,7 +5,7 @@ import java.sql.*;
 public class DataSource {
 	private String dbURI = "jdbc:postgresql://localhost/university";
 	private String user = "postgres";
-	private String password = "postgres";
+	private String password = "siw";
 
 	public Connection getConnection()  {
 		Connection connection = null;
