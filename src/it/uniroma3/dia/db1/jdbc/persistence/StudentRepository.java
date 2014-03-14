@@ -197,37 +197,4 @@ public class StudentRepository {
 
 		return students;
 	}
-
-	public void printAll() throws Exception {
-		// TODO come fare delle stampe per Nome corso -> Voto -> Studenti??
-		Connection connection = this.dataSource.getConnection();
-		String query = "select course, score, lastname from students join exams on student_code = code order by course, score"; //
-		PreparedStatement statement = connection.prepareStatement(query);
-		ResultSet result = statement.executeQuery();
-		String prevCorso = "";
-		String prevScore = "";
-
-		while (result.next()) {
-			if (!prevCorso.equals(result.getString("course"))) {
-				System.out.println(result.getString("course"));
-				prevCorso = result.getString("course");
-			}
-			if (!prevScore.equals(result.getString("score"))) {
-				System.out.println("\t\t" + result.getString("score"));
-				prevScore = result.getString("score");
-			}
-			System.out.println("\t\t\t" + result.getString("lastname"));
-			// System.out.println(result.getString("course") + " - " +
-			// result.getInt("score")+" - "+result.getString("lastname"));
-		}
-		// release resources
-		result.close();
-		statement.close();
-		connection.close();
-	}
-
-	public static void main(String[] args) throws Exception {
-		StudentRepository rp = new StudentRepository();
-		rp.printAll();
-	}
 }
